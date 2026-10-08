@@ -1,1 +1,1 @@
-# No custom rules required for this lightweight WebView wrapper.
+# No custom rules required. Android's framework WebView is used.

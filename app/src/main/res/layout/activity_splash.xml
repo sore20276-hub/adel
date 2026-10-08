@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08091B">
+
+    <shop.sntat.mobile.MatrixRainView
+        android:id="@+id/matrix_rain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+        <ImageView
+            android:id="@+id/splash_logo"
+            android:layout_width="212dp"
+            android:layout_height="212dp"
+            android:background="@drawable/rounded_icon"
+            android:contentDescription="@string/app_name"
+            android:padding="3dp"
+            android:src="@drawable/sntat_brand" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:gravity="center"
+            android:text="@string/welcome"
+            android:textColor="#FFF4DF"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/splash_caption"
+            android:textColor="#C49B54"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="30dp"
+        android:text="SNTAT  •  1.3.9"
+        android:textColor="#A6A5AE"
+        android:textSize="12sp" />
+</FrameLayout>
