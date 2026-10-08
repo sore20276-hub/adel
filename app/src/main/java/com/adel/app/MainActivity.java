@@ -433,7 +433,7 @@ public class MainActivity extends Activity {
         CookieManager manager = CookieManager.getInstance();
         manager.setAcceptCookie(true);
 
-        String baseUrl = "https://sntat.shop/";
+        String baseUrl = "https://sore20276-hub.github.io/snt/";
         String[] cookieParts = cookies.split(";\\s*");
         for (String cookie : cookieParts) {
             String value = cookie.trim();
