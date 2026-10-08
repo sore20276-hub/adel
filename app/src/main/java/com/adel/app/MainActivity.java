@@ -169,7 +169,7 @@ public class MainActivity extends Activity {
     }
 
     private void showPhoneGateOrPlatform(Bundle savedInstanceState) {
-        showPlatform();
+        showPlatform(savedInstanceState);
     }
 
     private void showPhoneGate(Bundle savedInstanceState) {
