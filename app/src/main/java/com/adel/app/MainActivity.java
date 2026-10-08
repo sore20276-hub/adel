@@ -1,6 +1,10 @@
 package com.adel.app;
 
 import android.app.Activity;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.os.Handler;
+import android.os.Looper;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -17,6 +21,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.Toast;
@@ -55,70 +60,112 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean welcomeShown = prefs.getBoolean(KEY_WELCOME_SHOWN, false);
-
-        if (!welcomeShown) {
-            prefs.edit().putBoolean(KEY_WELCOME_SHOWN, true).apply();
-            showWelcomeScreen();
-        } else {
-            showPhoneGateOrPlatform(savedInstanceState);
-        }
+        showWelcomeScreen();
     }
 
     private void showWelcomeScreen() {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setGravity(Gravity.CENTER);
-        root.setPadding(dp(28), dp(28), dp(28), dp(28));
-        root.setBackgroundColor(Color.rgb(8, 8, 10));
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        ));
+        root.setPadding(dp(24), dp(28), dp(24), dp(28));
+        root.setBackgroundColor(Color.rgb(4, 4, 7));
 
-        ImageView icon = new ImageView(this);
-        icon.setImageResource(R.mipmap.ic_launcher);
-        icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(150), dp(150));
-        iconParams.bottomMargin = dp(28);
-        root.addView(icon, iconParams);
+        // Outer glow layer
+        GradientDrawable glowBg = new GradientDrawable();
+        glowBg.setShape(GradientDrawable.OVAL);
+        glowBg.setColor(Color.rgb(28, 20, 5));
+        glowBg.setStroke(dp(5), Color.rgb(225, 181, 65));
+
+        FrameLayout logoBox = new FrameLayout(this);
+        logoBox.setBackground(glowBg);
+        logoBox.setPadding(dp(9), dp(9), dp(9), dp(9));
+
+        ImageView image = new ImageView(this);
+        image.setImageResource(R.drawable.welcome_zilzal);
+        image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        GradientDrawable clip = new GradientDrawable();
+        clip.setShape(GradientDrawable.OVAL);
+        clip.setColor(Color.BLACK);
+        image.setBackground(clip);
+        image.setClipToOutline(true);
+        logoBox.addView(image, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(dp(270), dp(270));
+        logoParams.bottomMargin = dp(24);
+        root.addView(logoBox, logoParams);
+
+        // Smooth endless rotation
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
+        rotate.setDuration(4000);
+        rotate.setRepeatCount(ValueAnimator.INFINITE);
+        rotate.setInterpolator(new android.view.animation.LinearInterpolator());
+        rotate.start();
+
+        // Neon-like breathing glow
+        ObjectAnimator pulseX = ObjectAnimator.ofFloat(logoBox, View.SCALE_X, 0.96f, 1.035f);
+        pulseX.setDuration(850);
+        pulseX.setRepeatCount(ValueAnimator.INFINITE);
+        pulseX.setRepeatMode(ValueAnimator.REVERSE);
+        pulseX.start();
+        ObjectAnimator pulseY = ObjectAnimator.ofFloat(logoBox, View.SCALE_Y, 0.96f, 1.035f);
+        pulseY.setDuration(850);
+        pulseY.setRepeatCount(ValueAnimator.INFINITE);
+        pulseY.setRepeatMode(ValueAnimator.REVERSE);
+        pulseY.start();
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(logoBox, View.ALPHA, 0.78f, 1f);
+        alpha.setDuration(700);
+        alpha.setRepeatCount(ValueAnimator.INFINITE);
+        alpha.setRepeatMode(ValueAnimator.REVERSE);
+        alpha.start();
 
         TextView welcome = new TextView(this);
-        welcome.setText(getString(R.string.welcome_title));
+        welcome.setText("زلزال يرحب بكم");
         welcome.setTextColor(Color.WHITE);
-        welcome.setTextSize(30);
+        welcome.setTextSize(28);
         welcome.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         welcome.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams welcomeParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         welcomeParams.bottomMargin = dp(18);
         root.addView(welcome, welcomeParams);
 
-        TextView telegram = new TextView(this);
-        telegram.setText(getString(R.string.telegram_channel));
-        telegram.setTextColor(Color.rgb(80, 180, 255));
-        telegram.setTextSize(19);
-        telegram.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        telegram.setGravity(Gravity.CENTER);
-        telegram.setPadding(dp(14), dp(12), dp(14), dp(12));
-        telegram.setClickable(true);
-        telegram.setFocusable(true);
-        telegram.setOnClickListener(v -> openExternal(Uri.parse(getString(R.string.telegram_url))));
-        root.addView(telegram, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        Button join = new Button(this);
+        join.setText("انضم إلى قناتنا  snt41");
+        join.setTextColor(Color.rgb(15, 15, 18));
+        join.setTextSize(18);
+        join.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        join.setAllCaps(false);
+        GradientDrawable joinBg = new GradientDrawable();
+        joinBg.setColor(Color.rgb(225, 181, 65));
+        joinBg.setCornerRadius(dp(16));
+        join.setBackground(joinBg);
+        join.setOnClickListener(v -> openExternal(Uri.parse("https://t.me/snt41")));
+        root.addView(join, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+
+        TextView timer = new TextView(this);
+        timer.setText("سيتم الدخول تلقائياً خلال 4 ثوانٍ");
+        timer.setTextColor(Color.rgb(180, 180, 185));
+        timer.setTextSize(14);
+        timer.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams timerParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        timerParams.topMargin = dp(16);
+        root.addView(timer, timerParams);
 
         setContentView(root);
 
-        handler.postDelayed(() -> {
+        // Auto enter after 4 seconds.
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isFinishing() && !isDestroyed()) {
+                rotate.cancel();
+                pulseX.cancel();
+                pulseY.cancel();
+                alpha.cancel();
                 showPhoneGateOrPlatform(null);
             }
-        }, WELCOME_DURATION_MS);
+        }, 4000);
     }
 
     private void showPhoneGateOrPlatform(Bundle savedInstanceState) {
@@ -157,7 +204,7 @@ public class MainActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView hint = new TextView(this);
-        hint.setText("أدخل رقم هاتفك للمتابعة إلى Adel");
+        hint.setText("أدخل رقم هاتفك للمتابعة إلى زلزال");
         hint.setTextColor(Color.rgb(175, 175, 185));
         hint.setTextSize(15);
         hint.setGravity(Gravity.CENTER);

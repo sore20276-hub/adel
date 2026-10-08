@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Adel</string>
+    <string name="app_name">زلزال</string>
     <string name="start_url">https://sore20276-hub.github.io/snt/</string>
     <string name="welcome_title">زلزال يرحب بكم</string>
-    <string name="telegram_channel">قناتنا على تلجرام @snt41</string>
+    <string name="telegram_channel">انضم إلى قناتنا snt41</string>
     <string name="telegram_url">https://t.me/snt41</string>
     <string name="login_notice_title">تنبيه Adel</string>
     <string name="login_notice_message">تم تفعيل حفظ جلسة تسجيل الدخول داخل التطبيق لتسريع الدخول لاحقًا، وتم إيقاف نافذة كلمات المرور الخارجية.</string>
