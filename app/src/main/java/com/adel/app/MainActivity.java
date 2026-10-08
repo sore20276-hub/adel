@@ -17,6 +17,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.widget.Toast;
+import android.text.InputType;
+import android.graphics.drawable.GradientDrawable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.webkit.CookieManager;
@@ -37,6 +42,8 @@ public class MainActivity extends Activity {
     private static final String KEY_SAVED_COOKIES = "saved_platform_cookies_v1";
     private static final String KEY_LAST_PLATFORM_URL = "last_platform_url_v1";
     private static final String KEY_WEB_STORAGE_STATE = "web_storage_state_v1";
+    private static final String KEY_PHONE_GATE_DONE = "phone_gate_done_v1";
+    private static final String KEY_PHONE_NUMBER = "phone_number_v1";
     private static final long WELCOME_DURATION_MS = 2400L;
 
     private WebView webView;
@@ -55,7 +62,7 @@ public class MainActivity extends Activity {
             prefs.edit().putBoolean(KEY_WELCOME_SHOWN, true).apply();
             showWelcomeScreen();
         } else {
-            showPlatform(savedInstanceState);
+            showPhoneGateOrPlatform(savedInstanceState);
         }
     }
 
@@ -109,9 +116,131 @@ public class MainActivity extends Activity {
 
         handler.postDelayed(() -> {
             if (!isFinishing() && !isDestroyed()) {
-                showPlatform(null);
+                showPhoneGateOrPlatform(null);
             }
         }, WELCOME_DURATION_MS);
+    }
+
+    private void showPhoneGateOrPlatform(Bundle savedInstanceState) {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (prefs.getBoolean(KEY_PHONE_GATE_DONE, false)) {
+            showPlatform(savedInstanceState);
+        } else {
+            showPhoneGate(savedInstanceState);
+        }
+    }
+
+    private void showPhoneGate(Bundle savedInstanceState) {
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setGravity(Gravity.CENTER);
+        root.setPadding(dp(28), dp(30), dp(28), dp(30));
+        root.setBackgroundColor(Color.rgb(8, 8, 10));
+        root.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(R.mipmap.ic_launcher);
+        icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(112), dp(112));
+        iconParams.bottomMargin = dp(22);
+        root.addView(icon, iconParams);
+
+        TextView title = new TextView(this);
+        title.setText("تسجيل الدخول");
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(27);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+        root.addView(title, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextView hint = new TextView(this);
+        hint.setText("أدخل رقم هاتفك للمتابعة إلى Adel");
+        hint.setTextColor(Color.rgb(175, 175, 185));
+        hint.setTextSize(15);
+        hint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hintParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hintParams.topMargin = dp(8);
+        hintParams.bottomMargin = dp(26);
+        root.addView(hint, hintParams);
+
+        LinearLayout phoneRow = new LinearLayout(this);
+        phoneRow.setOrientation(LinearLayout.HORIZONTAL);
+        phoneRow.setGravity(Gravity.CENTER_VERTICAL);
+        phoneRow.setPadding(dp(14), 0, dp(14), 0);
+        GradientDrawable fieldBg = new GradientDrawable();
+        fieldBg.setColor(Color.rgb(24, 24, 28));
+        fieldBg.setCornerRadius(dp(14));
+        fieldBg.setStroke(dp(1), Color.rgb(55, 55, 64));
+        phoneRow.setBackground(fieldBg);
+
+        TextView prefix = new TextView(this);
+        prefix.setText("+964");
+        prefix.setTextColor(Color.WHITE);
+        prefix.setTextSize(18);
+        prefix.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        prefix.setGravity(Gravity.CENTER);
+        phoneRow.addView(prefix, new LinearLayout.LayoutParams(dp(64), dp(58)));
+
+        EditText phone = new EditText(this);
+        phone.setHint("7XX XXX XXXX");
+        phone.setHintTextColor(Color.rgb(115, 115, 125));
+        phone.setTextColor(Color.WHITE);
+        phone.setTextSize(18);
+        phone.setSingleLine(true);
+        phone.setGravity(Gravity.CENTER_VERTICAL);
+        phone.setBackgroundColor(Color.TRANSPARENT);
+        phone.setInputType(InputType.TYPE_CLASS_PHONE);
+        phone.setPadding(dp(8), 0, dp(4), 0);
+        phoneRow.addView(phone, new LinearLayout.LayoutParams(0, dp(58), 1f));
+
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(58));
+        rowParams.bottomMargin = dp(18);
+        root.addView(phoneRow, rowParams);
+
+        Button enter = new Button(this);
+        enter.setText("دخول");
+        enter.setTextColor(Color.WHITE);
+        enter.setTextSize(18);
+        enter.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        enter.setAllCaps(false);
+        GradientDrawable buttonBg = new GradientDrawable();
+        buttonBg.setColor(Color.rgb(30, 130, 245));
+        buttonBg.setCornerRadius(dp(14));
+        enter.setBackground(buttonBg);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(56));
+        root.addView(enter, buttonParams);
+
+        TextView note = new TextView(this);
+        note.setText("الدخول برقم الهاتف داخل التطبيق");
+        note.setTextColor(Color.rgb(105, 105, 115));
+        note.setTextSize(12);
+        note.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams noteParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        noteParams.topMargin = dp(16);
+        root.addView(note, noteParams);
+
+        enter.setOnClickListener(v -> {
+            String digits = phone.getText().toString().replaceAll("[^0-9]", "");
+            if (digits.startsWith("0")) digits = digits.substring(1);
+            if (digits.length() != 10 || !digits.startsWith("7")) {
+                Toast.makeText(this, "أدخل رقم عراقي صحيح مثل 7XX XXX XXXX", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                    .putBoolean(KEY_PHONE_GATE_DONE, true)
+                    .putString(KEY_PHONE_NUMBER, "+964" + digits)
+                    .apply();
+            showPlatform(savedInstanceState);
+        });
+
+        setContentView(root);
     }
 
     private void showPlatform(Bundle savedInstanceState) {
