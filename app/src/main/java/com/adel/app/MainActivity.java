@@ -169,12 +169,7 @@ public class MainActivity extends Activity {
     }
 
     private void showPhoneGateOrPlatform(Bundle savedInstanceState) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        if (prefs.getBoolean(KEY_PHONE_GATE_DONE, false)) {
-            showPlatform(savedInstanceState);
-        } else {
-            showPhoneGate(savedInstanceState);
-        }
+        showPlatform();
     }
 
     private void showPhoneGate(Bundle savedInstanceState) {
@@ -480,7 +475,7 @@ public class MainActivity extends Activity {
         CookieManager manager = CookieManager.getInstance();
         manager.setAcceptCookie(true);
 
-        String baseUrl = "https://sore20276-hub.github.io/snt/";
+        String baseUrl = "https://sntat.shop/auth?mode=signin";
         String[] cookieParts = cookies.split(";\\s*");
         for (String cookie : cookieParts) {
             String value = cookie.trim();
